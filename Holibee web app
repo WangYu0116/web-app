@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Holibee创意海报生成器 网页版</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@700&family=Pacifico&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Satisfy&family=Caveat:wght@400;700&family=Lobster&family=Righteous&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=Zhi+Mang+Xing&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .app-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .workflow {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 30px rgba(252, 182, 159, 0.3);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .text-mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .text-input-area {
+            display: none;
+        }
+
+        .text-input-area.active {
+            display: block;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffe5e0;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #ff9a9e;
+        }
+
+        .font-selector, .font-weight-selector {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffe5e0;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .font-selector:focus, .font-weight-selector:focus {
+            outline: none;
+            border-color: #ff9a9e;
+        }
+
+        .font-disclaimer {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #fff9f7;
+            border-radius: 8px;
+            border-left: 3px solid #ff9a9e;
+        }
+
+        /* Handwriting UI removed */
+
+        .text-preview-img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+        }
+
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 154, 158, 0.4);
+        }
+
+        .svg-preview-container {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 3/4;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 15px 50px rgba(252, 182, 159, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .svg-preview {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .upload-zone {
+            position: absolute;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            background: rgba(255, 154, 158, 0.03);
+            pointer-events: none;
+        }
+
+        .upload-zone.top {
+            top: 0;
+            height: 50%;
+        }
+
+        .upload-zone.bottom {
+            bottom: 0;
+            height: 50%;
+        }
+
+        .upload-zone:hover {
+            background: rgba(255, 154, 158, 0.08);
+        }
+
+        .upload-zone.has-image {
+            background: transparent;
+        }
+
+        .upload-prompt {
+            text-align: center;
+            color: #ff9a9e;
+            pointer-events: auto;
+            cursor: pointer;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            border: 2px dashed #ffd1c7;
+        }
+
+        .image-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            color: #ff9a9e;
+            font-weight: 600;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 154, 158, 0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .control-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+        }
+
+        .action-buttons {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(252, 182, 159, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(252, 182, 159, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #ff9a9e;
+            border: 2px solid #ffd1c7;
+        }
+
+        .btn-secondary:hover {
+            background: #fff9f7;
+        }
+
+        .btn-action:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            background-image: none;
+            border-color: #e0e0e0;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #ff9a9e;
+        }
+
+        .modal-toolbar {
+            background: white;
+            padding: 15px 20px;
+        }
+
+        .tool-group {
+            margin-bottom: 15px;
+        }
+
+        .tool-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-item.active {
+            border-color: #ff9a9e;
+            transform: scale(1.1);
+        }
+
+        .size-slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #ffe5e0;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ff9a9e;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* handwriting canvas removed */
+
+        .modal-footer {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .draggable {
+            cursor: move;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .control-label {
+            flex: 1;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ffe5e0;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #ffe5e0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ff9a9e;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h1>✨ Holibee创意海报生成器 网页版</h1>
+        <p>让你的旅行记忆更生动</p>
+    </div>
+
+    <div class="workflow">
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">创建镂空文字</div>
+            </div>
+            
+            <div class="text-mode-tabs">
+                <button class="tab-btn active" onclick="switchTextMode('font')">使用字体</button>
+            </div>
+
+            <div class="text-input-area active" id="fontMode">
+                <input type="text" class="text-input" id="textInput" placeholder="输入文字 (如:HOLIDAY)" value="HOLIDAY">
+                
+                <div class="font-disclaimer">
+                    ⚠️ 字体仅供个人使用，商用请自行判断版权
+                </div>
+                
+                <select class="font-selector" id="fontSelect">
+                    <optgroup label="中文手写字体">
+                        <option value="Ma Shan Zheng">马善政楷书（中文）</option>
+                        <option value="ZCOOL XiaoWei">站酷小薇体（中文）</option>
+                        <option value="Long Cang">龙藏体（中文）</option>
+                        <option value="Liu Jian Mao Cao">刘建毛草（中文）</option>
+                        <option value="Zhi Mang Xing">志莽行书（中文）</option>
+                        <option value="ZCOOL KuaiLe">站酷快乐体（中文）</option>
+                        <option value="KaiTi, STKaiti, serif">楷体 KaiTi（中文）</option>
+                        <option value="STXingkai, cursive">行楷 STXingkai（中文）</option>
+                    </optgroup>
+                    <optgroup label="流线型字体">
+                        <option value="Pacifico">Pacifico - 流畅圆润（英文）</option>
+                        <option value="Satisfy">Satisfy - 优雅飘逸（英文）</option>
+                        <option value="Lobster">Lobster - 复古流线（英文）</option>
+                    </optgroup>
+                    <optgroup label="手写体">
+                        <option value="Dancing Script">Dancing Script - 手写连笔（英文）</option>
+                        <option value="Great Vibes">Great Vibes - 艺术签名（英文）</option>
+                        <option value="Caveat">Caveat - 随性涂鸦（英文）</option>
+                    </optgroup>
+                    <optgroup label="经典字体">
+                        <option value="Montserrat" selected>Montserrat - 现代几何（英文）</option>
+                        <option value="Playfair Display">Playfair Display - 优雅衬线（英文）</option>
+                        <option value="Righteous">Righteous - 复古粗体（英文）</option>
+                    </optgroup>
+                    <optgroup label="系统字体">
+                        <option value="Arial">Arial（英文）</option>
+                        <option value="Georgia">Georgia（英文）</option>
+                        <option value="Impact">Impact（英文）</option>
+                        <option value="Microsoft YaHei, sans-serif">微软雅黑（中文）</option>
+                        <option value="SimHei, sans-serif">黑体（中文）</option>
+                    </optgroup>
+                </select>
+                
+                <select class="font-weight-selector" id="fontWeightSelect">
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                    <option value="300">300</option>
+                    <option value="400" selected>400</option>
+                    <option value="500">500</option>
+                    <option value="600">600</option>
+                    <option value="700">700</option>
+                    <option value="800">800</option>
+                    <option value="900">900</option>
+                </select>
+                
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; font-size: 13px; margin-bottom: 4px; color: #666;">文字颜色</label>
+                    <select id="textColorSelect" class="control-input">
+                        <option value="#ffffff">白色</option>
+                        <option value="#000000">黑色</option>
+                        <option value="#ff6b6b">红色</option>
+                        <option value="#4ecdc4">青色</option>
+                        <option value="#45b7d1">蓝色</option>
+                        <option value="#f9ca24">黄色</option>
+                        <option value="custom">自定义...</option>
+                    </select>
+                    <input type="color" id="customTextColor" value="#ffffff" style="width: 100%; height: 40px; margin-top: 4px; border: 2px solid #ffe5e0; border-radius: 8px; display: none;">
+                </div>
+                
+                <div class="control-row">
+                    <div class="control-label">
+                        缩放
+                        <input type="range" id="textScaleSlider" min="0.3" max="2" step="0.01" value="1" class="control-input">
+                    </div>
+                    <div class="control-label">
+                        旋转
+                        <input type="range" id="textRotateSlider" min="-180" max="180" step="1" value="0" class="control-input">
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label style="display:block; font-size:13px; margin-bottom:4px; color:#666;">文字横向/纵向形变</label>
+                    <div class="control-row">
+                        <div style="flex:1">
+                            <div style="font-size:12px; color:#666; margin-bottom:4px;">横向（拉长/缩短）</div>
+                            <input type="range" id="textScaleXSlider" min="0.5" max="1.8" step="0.01" value="1" class="control-input">
+                        </div>
+                        <div style="flex:1">
+                            <div style="font-size:12px; color:#666; margin-bottom:4px;">纵向（压细/拉高）</div>
+                            <input type="range" id="textScaleYSlider" min="0.5" max="1.4" step="0.01" value="0.85" class="control-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-row">
+                    <div class="control-label">
+                        水平位置
+                        <input type="range" id="textPosXSlider" min="0" max="1200" step="1" value="600" class="control-input">
+                    </div>
+                    <div class="control-label">
+                        垂直位置
+                        <input type="range" id="textPosYSlider" min="0" max="1600" step="1" value="800" class="control-input">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label class="control-label">
+                        字间距
+                        <input type="range" id="letterSpacingSlider" min="-100" max="100" step="1" value="0" class="control-input">
+                        <span id="letterSpacingValue">0</span>px
+                    </label>
+                </div>
+
+                <!-- duplicate sliders removed (we already have horizontal/vertical shape controls above) -->
+            </div>
+
+            <!-- handwriting mode removed -->
+        </div>
+    </div>
+
+    <div class="svg-preview-container">
+        <canvas id="posterCanvas" class="svg-preview" width="1200" height="1600"></canvas>
+        
+        <div class="upload-zone top" id="topZone">
+            <div class="upload-prompt" id="topPrompt" onclick="handleZoneClick('top')">
+                <p>📸 点击上传上部图片</p>
+            </div>
+            <div class="image-controls" id="topControls" style="display: none;">
+                <button class="control-btn" onclick="zoomImage('top', 1.1, event)" ontouchstart="zoomImage('top', 1.1, event)" title="放大">+</button>
+                <button class="control-btn" onclick="zoomImage('top', 0.9, event)" ontouchstart="zoomImage('top', 0.9, event)" title="缩小">−</button>
+                <button class="control-btn" onclick="removeImage('top', event)" ontouchstart="removeImage('top', event)" title="删除">×</button>
+            </div>
+        </div>
+
+        <div class="upload-zone bottom" id="bottomZone">
+            <div class="upload-prompt" id="bottomPrompt" onclick="handleZoneClick('bottom')">
+                <p>📸 点击上传下部图片</p>
+            </div>
+            <div class="image-controls" id="bottomControls" style="display: none;">
+                <button class="control-btn" onclick="zoomImage('bottom', 1.1, event)" ontouchstart="zoomImage('bottom', 1.1, event)" title="放大">+</button>
+                <button class="control-btn" onclick="zoomImage('bottom', 0.9, event)" ontouchstart="zoomImage('bottom', 0.9, event)" title="缩小">−</button>
+                <button class="control-btn" onclick="removeImage('bottom', event)" ontouchstart="removeImage('bottom', event)" title="删除">×</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="topInput" accept="image/*" onchange="handleImageUpload('top', event)">
+    <input type="file" id="bottomInput" accept="image/*" onchange="handleImageUpload('bottom', event)">
+
+    <div class="action-buttons">
+        <button class="btn-action btn-secondary" onclick="resetAll()">🔄 重置</button>
+        <button class="btn-action btn-primary" id="downloadBtn" onclick="downloadPoster()" disabled>💾 下载海报</button>
+    </div>
+
+    <footer style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
+        <p>完整版本在Microsoft Store和App Store搜索Holibee</p>
+    </footer>
+
+    <!-- handwriting modal removed -->
+
+    <div class="loading" id="loading">
+        <div style="text-align: center; color: white;">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px;">生成中...</p>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            textMode: 'font',
+            topImage: null,
+            bottomImage: null,
+            topImageEl: null,
+            bottomImageEl: null,
+            text: 'HOLIDAY',
+            font: 'Montserrat',
+            // default to a lighter weight so the text looks thinner
+            fontWeight: '400',
+            textColor: '#ffffff',
+            topImageScale: 1,
+            bottomImageScale: 1,
+            topImageX: 0,
+            topImageY: 0,
+            bottomImageX: 0,
+            bottomImageY: 400,
+            dragging: null,
+            textScale: 1,
+            // horizontal and vertical stretch factors (allow making text "短一些细一些但长一些")
+            textScaleX: 1,
+            textScaleY: 0.85,
+            textRotate: 0,
+            textPosX: 600,
+            textPosY: 800,
+            letterSpacing: 0,
+            smoothingFactor: 0.3
+        };
+
+        // high-res text render scale for accurate boundary detection
+        const TEXT_RENDER_SCALE = 4;
+
+        const posterCanvas = document.getElementById('posterCanvas');
+        const posterCtx = posterCanvas.getContext('2d');
+
+        // helper: compute draw rectangle for an image within the 1200x1200 box
+        // keeps image aspect ratio and centers vertically inside the box
+        function computeDrawRect(img, stateX, stateY, userScale, exportScale = 1) {
+            const BOX = 1200;
+            const boxW = BOX * userScale * exportScale;
+            const boxH = BOX * userScale * exportScale;
+
+            // target width equals the box width (so horizontal mapping across 0..1200 stays consistent)
+            const drawW = boxW;
+            const drawH = (img.height / img.width) * drawW;
+
+            const dx = stateX * exportScale;
+            // center vertically inside the box
+            const dy = stateY * exportScale + (boxH - drawH) / 2;
+
+            return { dx, dy, w: drawW, h: drawH };
+        }
+
+        window.onload = function() {
+            generateFontText();
+            setupImageDrag();
+            setupTextControls();
+            setupTextColorControl();
+            setupRealtimePreview();
+            drawPosterPreview();
+        };
+
+        function setupRealtimePreview() {
+            document.getElementById('textInput').addEventListener('input', generateFontText);
+            document.getElementById('fontSelect').addEventListener('change', generateFontText);
+            document.getElementById('fontWeightSelect').addEventListener('change', generateFontText);
+        }
+
+        function setupTextControls() {
+            const scaleSlider = document.getElementById('textScaleSlider');
+            const rotateSlider = document.getElementById('textRotateSlider');
+            const posXSlider = document.getElementById('textPosXSlider');
+            const posYSlider = document.getElementById('textPosYSlider');
+            const letterSpacingSlider = document.getElementById('letterSpacingSlider');
+            const letterSpacingValue = document.getElementById('letterSpacingValue');
+            const scaleXSlider = document.getElementById('textScaleXSlider');
+            const scaleYSlider = document.getElementById('textScaleYSlider');
+
+            scaleSlider.addEventListener('input', function() {
+                state.textScale = parseFloat(this.value);
+                updateTextTransform();
+            });
+            rotateSlider.addEventListener('input', function() {
+                state.textRotate = parseInt(this.value);
+                updateTextTransform();
+            });
+            posXSlider.addEventListener('input', function() {
+                state.textPosX = parseInt(this.value);
+                updateTextTransform();
+            });
+            posYSlider.addEventListener('input', function() {
+                state.textPosY = parseInt(this.value);
+                updateTextTransform();
+            });
+            letterSpacingSlider.addEventListener('input', function() {
+                state.letterSpacing = parseInt(this.value);
+                letterSpacingValue.textContent = this.value;
+                updateTextTransform();
+            });
+            scaleXSlider.addEventListener('input', function() {
+                state.textScaleX = parseFloat(this.value);
+                updateTextTransform();
+            });
+            scaleYSlider.addEventListener('input', function() {
+                state.textScaleY = parseFloat(this.value);
+                updateTextTransform();
+            });
+        }
+
+        function setupTextColorControl() {
+            const textColorSelect = document.getElementById('textColorSelect');
+            const customTextColor = document.getElementById('customTextColor');
+
+            textColorSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customTextColor.style.display = 'block';
+                    state.textColor = customTextColor.value;
+                } else {
+                    customTextColor.style.display = 'none';
+                    state.textColor = this.value;
+                }
+                updateTextTransform();
+            });
+
+            customTextColor.addEventListener('input', function() {
+                state.textColor = this.value;
+                updateTextTransform();
+            });
+        }
+
+        function updateTextTransform() {
+            if (state.textMode !== 'font') return;
+            // update state-driven transform for canvas preview
+            // font/fill are applied when drawing to canvas
+            // regenerate boundary and redraw
+            setTimeout(() => {
+                generateTextBoundaryAndClip();
+            }, 0);
+            drawPosterPreview();
+        }
+
+        function setupImageDrag() {
+            let startX, startY, initialX, initialY;
+            let initialPinchDistance = 0;
+            let initialPinchScale = 1;
+            let pinchTarget = null;
+
+            // 鼠标事件
+            posterCanvas.addEventListener('mousedown', function(e) {
+                const rect = posterCanvas.getBoundingClientRect();
+                const scale = posterCanvas.width / rect.width;
+                const x = (e.clientX - rect.left) * scale;
+                const y = (e.clientY - rect.top) * scale;
+
+                const topW = 1200 * state.topImageScale;
+                const topH = 1200 * state.topImageScale;
+                const bottomW = 1200 * state.bottomImageScale;
+                const bottomH = 1200 * state.bottomImageScale;
+
+                if (state.topImage && x >= state.topImageX && x <= state.topImageX + topW && y >= state.topImageY && y <= state.topImageY + topH) {
+                    state.dragging = 'top';
+                    startX = x; startY = y;
+                    initialX = state.topImageX; initialY = state.topImageY;
+                    e.preventDefault();
+                } else if (state.bottomImage && x >= state.bottomImageX && x <= state.bottomImageX + bottomW && y >= state.bottomImageY && y <= state.bottomImageY + bottomH) {
+                    state.dragging = 'bottom';
+                    startX = x; startY = y;
+                    initialX = state.bottomImageX; initialY = state.bottomImageY;
+                    e.preventDefault();
+                }
+            });
+
+            posterCanvas.addEventListener('mousemove', function(e) {
+                if (state.dragging) {
+                    const rect = posterCanvas.getBoundingClientRect();
+                    const scale = posterCanvas.width / rect.width;
+                    const x = (e.clientX - rect.left) * scale;
+                    const y = (e.clientY - rect.top) * scale;
+                    const dx = x - startX;
+                    const dy = y - startY;
+
+                    if (state.dragging === 'top') {
+                        state.topImageX = initialX + dx;
+                        state.topImageY = initialY + dy;
+                    } else {
+                        state.bottomImageX = initialX + dx;
+                        state.bottomImageY = initialY + dy;
+                    }
+                    drawPosterPreview();
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('mouseup', function() {
+                state.dragging = null;
+            });
+
+            posterCanvas.addEventListener('mouseleave', function() {
+                state.dragging = null;
+            });
+
+            posterCanvas.addEventListener('wheel', function(e) {
+                const rect = posterCanvas.getBoundingClientRect();
+                const scale = posterCanvas.width / rect.width;
+                const x = (e.clientX - rect.left) * scale;
+                const y = (e.clientY - rect.top) * scale;
+
+                const topW = 1200 * state.topImageScale;
+                const topH = 1200 * state.topImageScale;
+                const bottomW = 1200 * state.bottomImageScale;
+                const bottomH = 1200 * state.bottomImageScale;
+
+                let position = null;
+                if (state.topImage && x >= state.topImageX && x <= state.topImageX + topW && y >= state.topImageY && y <= state.topImageY + topH) position = 'top';
+                else if (state.bottomImage && x >= state.bottomImageX && x <= state.bottomImageX + bottomW && y >= state.bottomImageY && y <= state.bottomImageY + bottomH) position = 'bottom';
+
+                if (position) {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? 0.95 : 1.05;
+                    if (position === 'top') {
+                        state.topImageScale *= delta;
+                        state.topImageScale = Math.max(0.1, Math.min(5, state.topImageScale));
+                    } else {
+                        state.bottomImageScale *= delta;
+                        state.bottomImageScale = Math.max(0.1, Math.min(5, state.bottomImageScale));
+                    }
+                    drawPosterPreview();
+                }
+            }, { passive: false });
+
+            // 触摸事件 - 单指拖动
+            posterCanvas.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const rect = posterCanvas.getBoundingClientRect();
+                    const scale = posterCanvas.width / rect.width;
+                    const x = (touch.clientX - rect.left) * scale;
+                    const y = (touch.clientY - rect.top) * scale;
+
+                    const topW = 1200 * state.topImageScale;
+                    const topH = 1200 * state.topImageScale;
+                    const bottomW = 1200 * state.bottomImageScale;
+                    const bottomH = 1200 * state.bottomImageScale;
+
+                    if (state.topImage && x >= state.topImageX && x <= state.topImageX + topW && y >= state.topImageY && y <= state.topImageY + topH) {
+                        state.dragging = 'top';
+                        startX = x; startY = y;
+                        initialX = state.topImageX; initialY = state.topImageY;
+                        e.preventDefault();
+                    } else if (state.bottomImage && x >= state.bottomImageX && x <= state.bottomImageX + bottomW && y >= state.bottomImageY && y <= state.bottomImageY + bottomH) {
+                        state.dragging = 'bottom';
+                        startX = x; startY = y;
+                        initialX = state.bottomImageX; initialY = state.bottomImageY;
+                        e.preventDefault();
+                    }
+                } else if (e.touches.length === 2) {
+                    // 双指捏合缩放
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const rect = posterCanvas.getBoundingClientRect();
+                    const scale = posterCanvas.width / rect.width;
+                    
+                    // 计算两指中点
+                    const centerX = ((touch1.clientX + touch2.clientX) / 2 - rect.left) * scale;
+                    const centerY = ((touch1.clientY + touch2.clientY) / 2 - rect.top) * scale;
+                    
+                    // 判断捏合的是哪张图片
+                    const topW = 1200 * state.topImageScale;
+                    const topH = 1200 * state.topImageScale;
+                    const bottomW = 1200 * state.bottomImageScale;
+                    const bottomH = 1200 * state.bottomImageScale;
+                    
+                    if (state.topImage && centerX >= state.topImageX && centerX <= state.topImageX + topW && 
+                        centerY >= state.topImageY && centerY <= state.topImageY + topH) {
+                        pinchTarget = 'top';
+                        initialPinchScale = state.topImageScale;
+                    } else if (state.bottomImage && centerX >= state.bottomImageX && centerX <= state.bottomImageX + bottomW && 
+                               centerY >= state.bottomImageY && centerY <= state.bottomImageY + bottomH) {
+                        pinchTarget = 'bottom';
+                        initialPinchScale = state.bottomImageScale;
+                    }
+                    
+                    if (pinchTarget) {
+                        const dx = touch2.clientX - touch1.clientX;
+                        const dy = touch2.clientY - touch1.clientY;
+                        initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+                        e.preventDefault();
+                    }
+                }
+            }, { passive: false });
+
+            posterCanvas.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 1 && state.dragging) {
+                    const touch = e.touches[0];
+                    const rect = posterCanvas.getBoundingClientRect();
+                    const scale = posterCanvas.width / rect.width;
+                    const x = (touch.clientX - rect.left) * scale;
+                    const y = (touch.clientY - rect.top) * scale;
+                    const dx = x - startX;
+                    const dy = y - startY;
+
+                    if (state.dragging === 'top') {
+                        state.topImageX = initialX + dx;
+                        state.topImageY = initialY + dy;
+                    } else {
+                        state.bottomImageX = initialX + dx;
+                        state.bottomImageY = initialY + dy;
+                    }
+                    drawPosterPreview();
+                    e.preventDefault();
+                } else if (e.touches.length === 2 && pinchTarget) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const dx = touch2.clientX - touch1.clientX;
+                    const dy = touch2.clientY - touch1.clientY;
+                    const currentDistance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    const scaleChange = currentDistance / initialPinchDistance;
+                    const newScale = initialPinchScale * scaleChange;
+                    
+                    if (pinchTarget === 'top') {
+                        state.topImageScale = Math.max(0.1, Math.min(5, newScale));
+                    } else {
+                        state.bottomImageScale = Math.max(0.1, Math.min(5, newScale));
+                    }
+                    drawPosterPreview();
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            posterCanvas.addEventListener('touchend', function(e) {
+                if (e.touches.length === 0) {
+                    state.dragging = null;
+                    pinchTarget = null;
+                    initialPinchDistance = 0;
+                }
+            });
+
+            posterCanvas.addEventListener('touchcancel', function() {
+                state.dragging = null;
+                pinchTarget = null;
+                initialPinchDistance = 0;
+            });
+        }
+
+        function switchTextMode(mode) {
+            state.textMode = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.text-input-area').forEach(area => area.classList.remove('active'));
+            // Only font mode supported now
+            document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+            document.getElementById('fontMode').classList.add('active');
+        }
+
+        function generateFontText() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                return;
+            }
+            
+            state.text = text;
+            state.font = document.getElementById('fontSelect').value;
+            state.fontWeight = document.getElementById('fontWeightSelect').value;
+            
+            const textColorSelect = document.getElementById('textColorSelect');
+            if (textColorSelect.value === 'custom') {
+                state.textColor = document.getElementById('customTextColor').value;
+            } else {
+                state.textColor = textColorSelect.value;
+            }
+            
+            state.textMode = 'font';
+            // update state and redraw using canvas
+            setTimeout(() => {
+                generateTextBoundaryAndClip();
+            }, 100);
+            drawPosterPreview();
+            updateDownloadButton();
+        }
+
+        async function generateTextBoundaryAndClip() {
+            try {
+                const textImageData = await renderTextToImage();
+                const boundary = extractTextBoundary(textImageData);
+                // store computed boundaries to state for canvas clipping
+                state.boundaries = boundary;
+                // trigger canvas redraw
+                drawPosterPreview();
+            } catch (error) {
+                console.error('生成边界失败:', error);
+            }
+        }
+
+        async function renderTextToImage() {
+            return new Promise((resolve, reject) => {
+                const scale = TEXT_RENDER_SCALE;
+                const canvas = document.createElement('canvas');
+                canvas.width = 1200 * scale;
+                canvas.height = 1600 * scale;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (state.textMode === 'handwriting' && state.handwritingDataUrl) {
+                    const hwImg = new Image();
+                    hwImg.onload = function() {
+                        ctx.save();
+                            const imgW = 1200 * scale;
+                            const imgH = 400 * scale;
+                            const x = 0;
+                            const y = 600 * scale;
+                            ctx.drawImage(hwImg, x, y, imgW, imgH);
+                        ctx.restore();
+                        resolve(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                    };
+                    hwImg.onerror = reject;
+                    hwImg.src = state.handwritingDataUrl;
+                } else {
+                    ctx.save();
+                    
+                    const fontSize = 300 * scale * state.textScale;
+                    ctx.font = `${state.fontWeight} ${fontSize}px ${state.font}`;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    ctx.translate(state.textPosX * scale, state.textPosY * scale);
+                    ctx.rotate(state.textRotate * Math.PI / 180);
+                    ctx.scale(state.textScaleX, state.textScaleY);
+                    
+                    if (state.letterSpacing !== 0) {
+                        let totalWidth = 0;
+                        const charWidths = [];
+                        for (let i = 0; i < state.text.length; i++) {
+                            const w = ctx.measureText(state.text[i]).width;
+                            charWidths.push(w);
+                            totalWidth += w;
+                        }
+                        // account for horizontal scale (ctx.scale) and high-res render scale
+                        const effectiveLetter = state.letterSpacing * scale * state.textScaleX;
+                        totalWidth += effectiveLetter * (state.text.length - 1);
+                        
+                        let x = -totalWidth / 2;
+                        for (let i = 0; i < state.text.length; i++) {
+                            ctx.fillText(state.text[i], x + charWidths[i] / 2, 0);
+                            x += charWidths[i] + effectiveLetter;
+                        }
+                    } else {
+                        ctx.fillText(state.text, 0, 0);
+                    }
+                    
+                    ctx.restore();
+                    resolve(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                }
+            });
+        }
+
+        function extractTextBoundary(imageData) {
+            const width = imageData.width;
+            const height = imageData.height;
+            const data = imageData.data;
+            const topBoundary = [];
+            const bottomBoundary = [];
+            const threshold = 30;
+            // We want to return boundary arrays mapped to 1200 horizontal samples
+            const sampleCount = 1200;
+            
+            for (let sx = 0; sx < sampleCount; sx++) {
+                const x = Math.floor(sx * (width / sampleCount));
+                let topY = height;
+                let bottomY = -1;
+                
+                // 改进的凹面检测：找到所有文字像素段，然后找最深的凹陷
+                const textSegments = [];
+                let segmentStart = -1;
+                
+                for (let y = 0; y < height; y++) {
+                    const idx = (y * width + x) * 4;
+                    const alpha = data[idx + 3];
+                    const gray = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+                    const hasPixel = alpha > threshold && gray > threshold;
+                    
+                    if (hasPixel && segmentStart === -1) {
+                        segmentStart = y;
+                    } else if (!hasPixel && segmentStart !== -1) {
+                        textSegments.push({ start: segmentStart, end: y - 1 });
+                        segmentStart = -1;
+                    }
+                }
+                if (segmentStart !== -1) {
+                    textSegments.push({ start: segmentStart, end: height - 1 });
+                }
+                
+                // 对于顶部边界：找最深的凹陷（最大的Y值）
+                // 这样凹面（如M的中间谷）会被正确检测
+                if (textSegments.length > 0) {
+                    // 找所有段中最靠下的起始点（最深的凹陷）
+                    topY = Math.max(...textSegments.map(seg => seg.start));
+                    bottomY = Math.max(...textSegments.map(seg => seg.end));
+                } else {
+                    // 没有文字像素，使用相邻列的值
+                    if (sx > 0) {
+                        topY = topBoundary[sx - 1];
+                        bottomY = bottomBoundary[sx - 1];
+                    } else {
+                        topY = 0;
+                        bottomY = 0;
+                    }
+                }
+                
+                topBoundary.push(topY);
+                bottomBoundary.push(bottomY);
+            }
+            
+            // 更激进的平滑以处理凹陷
+            const smoothTopBoundary = medianFilter(topBoundary, 7);
+            const smoothBottomBoundary = medianFilter(bottomBoundary, 5);
+            
+            return { 
+                topBoundary: smoothTopBoundary, 
+                bottomBoundary: smoothBottomBoundary 
+            };
+        }
+
+        function medianFilter(array, windowSize) {
+            const result = [...array];
+            const halfWindow = Math.floor(windowSize / 2);
+            
+            for (let i = halfWindow; i < array.length - halfWindow; i++) {
+                const window = [];
+                for (let j = -halfWindow; j <= halfWindow; j++) {
+                    window.push(array[i + j]);
+                }
+                window.sort((a, b) => a - b);
+                result[i] = window[Math.floor(window.length / 2)];
+            }
+            
+            return result;
+        }
+
+        function updateClipPaths(boundaries) {
+            // No-op for canvas mode. Boundaries are stored in state.boundaries and used by drawPosterPreview / export.
+            state.boundaries = boundaries;
+        }
+
+        function generateSmoothPath(points) {
+            if (points.length < 2) return '';
+            
+            let path = '';
+            const step = Math.max(1, Math.floor(points.length / 200));
+            
+            for (let i = 0; i < points.length; i += step) {
+                const point = points[i];
+                
+                if (i === 0) {
+                    continue;
+                } else if (i < points.length - step) {
+                    const prevPoint = points[Math.max(0, i - step)];
+                    const nextPoint = points[Math.min(points.length - 1, i + step)];
+                    
+                    const cp1x = prevPoint.x + (point.x - prevPoint.x) * 0.3;
+                    const cp1y = prevPoint.y + (point.y - prevPoint.y) * 0.3;
+                    const cp2x = point.x - (nextPoint.x - point.x) * 0.3;
+                    const cp2y = point.y - (nextPoint.y - point.y) * 0.3;
+                    
+                    path += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${point.x},${point.y}`;
+                } else {
+                    path += ` L ${point.x},${point.y}`;
+                }
+            }
+            
+            return path;
+        }
+
+        function zoomImage(position, scale, event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            if (position === 'top') {
+                state.topImageScale *= scale;
+                state.topImageScale = Math.max(0.1, Math.min(5, state.topImageScale));
+            } else {
+                state.bottomImageScale *= scale;
+                state.bottomImageScale = Math.max(0.1, Math.min(5, state.bottomImageScale));
+            }
+            drawPosterPreview();
+        }
+
+        function updateImageTransform(position) {
+            // 直接重绘，变换已在 zoomImage 中处理
+            drawPosterPreview();
+        }
+
+        function clearCanvasPreview() {
+            posterCtx.clearRect(0, 0, posterCanvas.width, posterCanvas.height);
+        }
+
+        function drawPosterPreview() {
+            // draw background
+            clearCanvasPreview();
+            posterCtx.save();
+            posterCtx.fillStyle = '#ffffff';
+            posterCtx.fillRect(0, 0, posterCanvas.width, posterCanvas.height);
+
+            // draw bottom image
+            if (state.bottomImageEl) {
+                try {
+                    const r = computeDrawRect(state.bottomImageEl, state.bottomImageX, state.bottomImageY, state.bottomImageScale, 1);
+                    posterCtx.drawImage(state.bottomImageEl, r.dx, r.dy, r.w, r.h);
+                } catch (e) {
+                    console.warn('draw bottom image failed', e);
+                }
+            }
+
+            // draw top image clipped by top boundary if available
+            if (state.topImageEl) {
+                if (state.boundaries && state.boundaries.topBoundary) {
+                    const path = new Path2D();
+                    path.moveTo(0, 0);
+                    path.lineTo(posterCanvas.width, 0);
+                    const top = state.boundaries.topBoundary; // length 1200
+                    for (let sx = 1199; sx >= 0; sx--) {
+                        const y = Math.max(0, top[sx]);
+                        // topBoundary is in TEXT_RENDER_SCALE space (0..1600*scale)
+                        // if extractTextBoundary produced samples mapped to 1200, they are in high-res image pixels
+                        // We need to map them to canvas pixel coordinates (posterCanvas.height = 1600)
+                        const mappedY = Math.floor(y / TEXT_RENDER_SCALE);
+                        path.lineTo(sx, mappedY);
+                    }
+                    path.closePath();
+                    posterCtx.save();
+                    posterCtx.clip(path);
+                    const rTop = computeDrawRect(state.topImageEl, state.topImageX, state.topImageY, state.topImageScale, 1);
+                    posterCtx.drawImage(state.topImageEl, rTop.dx, rTop.dy, rTop.w, rTop.h);
+                    posterCtx.restore();
+                } else {
+                    const rTop = computeDrawRect(state.topImageEl, state.topImageX, state.topImageY, state.topImageScale, 1);
+                    posterCtx.drawImage(state.topImageEl, rTop.dx, rTop.dy, rTop.w, rTop.h);
+                }
+            }
+
+            // draw text (stroke/fill)
+            posterCtx.save();
+            posterCtx.strokeStyle = state.textColor;
+            posterCtx.fillStyle = state.textColor;
+            posterCtx.lineWidth = 3;
+
+            // always draw font text
+            const fontSize = 300 * state.textScale;
+            posterCtx.font = `${state.fontWeight} ${fontSize}px ${state.font}`;
+            posterCtx.textAlign = 'center';
+            posterCtx.textBaseline = 'middle';
+            posterCtx.translate(state.textPosX, state.textPosY);
+            posterCtx.rotate(state.textRotate * Math.PI / 180);
+            posterCtx.scale(state.textScaleX, state.textScaleY);
+                    if (state.letterSpacing !== 0) {
+                        const chars = state.text.split('');
+                        let totalWidth = 0;
+                        const widths = chars.map(c => posterCtx.measureText(c).width);
+                        widths.forEach(w => totalWidth += w);
+                        // account for horizontal scale so spacing feels consistent
+                        const effectiveLetter = state.letterSpacing * state.textScaleX;
+                        totalWidth += effectiveLetter * (chars.length - 1);
+                        let x = -totalWidth / 2;
+                        for (let i = 0; i < chars.length; i++) {
+                            posterCtx.fillText(chars[i], x + widths[i] / 2, 0);
+                            x += widths[i] + effectiveLetter;
+                        }
+                    } else {
+                        posterCtx.fillText(state.text, 0, 0);
+                    }
+
+            posterCtx.restore();
+            posterCtx.restore();
+        }
+
+        function handleZoneClick(position) {
+            document.getElementById(position + 'Input').click();
+        }
+
+        function handleImageUpload(position, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                if (position === 'top') {
+                    state.topImage = imageUrl;
+                    state.topImageScale = 1;
+                    state.topImageX = 0;
+                    state.topImageY = 0;
+                    // create and cache Image element to avoid async layering issues
+                    const img = new Image();
+                    img.onload = () => { state.topImageEl = img; drawPosterPreview(); };
+                    img.onerror = () => { console.warn('top image failed to load'); };
+                    img.src = imageUrl;
+                    document.getElementById('topPrompt').style.display = 'none';
+                    document.getElementById('topControls').style.display = 'flex';
+                    // draw will be triggered when image element loads
+                } else {
+                    state.bottomImage = imageUrl;
+                    state.bottomImageScale = 1;
+                    state.bottomImageX = 0;
+                    state.bottomImageY = 400;
+                    const img = new Image();
+                    img.onload = () => { state.bottomImageEl = img; drawPosterPreview(); };
+                    img.onerror = () => { console.warn('bottom image failed to load'); };
+                    img.src = imageUrl;
+                    document.getElementById('bottomPrompt').style.display = 'none';
+                    document.getElementById('bottomControls').style.display = 'flex';
+                    // draw will be triggered when image element loads
+                }
+                updateDownloadButton();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage(position, event) {
+            event.stopPropagation();
+            if (position === 'top') {
+                state.topImage = null;
+                state.topImageScale = 1;
+                state.topImageX = 0;
+                state.topImageY = 0;
+                state.topImageEl = null;
+                // clear top image state
+                // topImageEl not used in canvas mode
+                document.getElementById('topPrompt').style.display = 'block';
+                document.getElementById('topControls').style.display = 'none';
+                document.getElementById('topInput').value = '';
+            } else {
+                state.bottomImage = null;
+                state.bottomImageScale = 1;
+                state.bottomImageX = 0;
+                state.bottomImageY = 400;
+                state.bottomImageEl = null;
+                // bottomImageEl not used in canvas mode
+                document.getElementById('bottomPrompt').style.display = 'block';
+                document.getElementById('bottomControls').style.display = 'none';
+                document.getElementById('bottomInput').value = '';
+            }
+            updateDownloadButton();
+        }
+
+        function updateDownloadButton() {
+            const btn = document.getElementById('downloadBtn');
+            // require at least one loaded image element and text
+            const hasLoadedImage = !!(state.topImageEl || state.bottomImageEl);
+            btn.disabled = !(state.text && hasLoadedImage);
+        }
+
+        function openHandwriting() {
+            // handwriting removed
+        }
+        // handwriting code removed
+
+        function resetAll() {
+            if (!confirm('确定要重置所有内容吗？')) return;
+            
+            Object.assign(state, {
+                topImage: null,
+                bottomImage: null,
+                text: 'HOLIDAY',
+                font: 'Montserrat',
+                fontWeight: '400',
+                textColor: '#ffffff',
+                topImageScale: 1,
+                bottomImageScale: 1,
+                topImageX: 0,
+                topImageY: 0,
+                bottomImageX: 0,
+                bottomImageY: 400,
+                textScale: 1,
+                textScaleX: 1,
+                textScaleY: 0.85,
+                letterSpacing: 0,
+                handwritingDataUrl: null,
+                topImageEl: null,
+                bottomImageEl: null,
+                boundaries: null
+            });
+            
+            document.getElementById('textInput').value = 'HOLIDAY';
+            document.getElementById('fontSelect').value = 'Montserrat';
+            document.getElementById('fontWeightSelect').value = '400';
+            document.getElementById('textColorSelect').value = '#ffffff';
+            document.getElementById('customTextColor').style.display = 'none';
+            document.getElementById('textScaleSlider').value = '1';
+            // update new sliders
+            const sx = document.getElementById('textScaleXSlider'); if(sx) sx.value = '1';
+            const sy = document.getElementById('textScaleYSlider'); if(sy) sy.value = '0.85';
+            document.getElementById('textRotateSlider').value = '0';
+            document.getElementById('bottomInput').value = '';
+
+            // handwriting UI removed - nothing to reset for handwriting
+        // reset prompts and controls
+        document.getElementById('topPrompt').style.display = 'block';
+        document.getElementById('topControls').style.display = 'none';
+        document.getElementById('bottomPrompt').style.display = 'block';
+        document.getElementById('bottomControls').style.display = 'none';
+        // redraw canvas
+        drawPosterPreview();
+            
+            generateFontText();
+        }
+
+        async function downloadPoster() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const canvas = document.createElement("canvas");
+                const scale = 3;
+                canvas.width = 1200 * scale;
+                canvas.height = 1600 * scale;
+                const ctx = canvas.getContext("2d");
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                if (state.bottomImage) {
+                    const img = await loadImage(state.bottomImage);
+                    const r = computeDrawRect(img, state.bottomImageX, state.bottomImageY, state.bottomImageScale, scale);
+                    ctx.drawImage(img, r.dx, r.dy, r.w, r.h);
+                }
+                
+                // generate a high-res text image and extract boundary at TEXT_RENDER_SCALE
+                const textImageData = await renderTextToImage();
+                const boundary = extractTextBoundary(textImageData);
+                
+                if (state.topImage) {
+                    const img = await loadImage(state.topImage);
+                    ctx.save();
+                    
+                    // build high-res clip path based on TEXT_RENDER_SCALE and then draw
+                    const topClipPath = generateTopClipPath(boundary, scale);
+                    ctx.clip(topClipPath);
+                    const rTop = computeDrawRect(img, state.topImageX, state.topImageY, state.topImageScale, scale);
+                    ctx.drawImage(img, rTop.dx, rTop.dy, rTop.w, rTop.h);
+                    ctx.restore();
+                }
+                
+                ctx.save();
+                ctx.strokeStyle = state.textColor;
+                ctx.fillStyle = state.textColor;
+                ctx.lineWidth = 3 * scale;
+                
+                // always draw font text on export
+                const fontSize = 300 * scale * state.textScale;
+                ctx.font = `${state.fontWeight} ${fontSize}px ${state.font}`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                ctx.translate(state.textPosX * scale, state.textPosY * scale);
+                ctx.rotate(state.textRotate * Math.PI / 180);
+                ctx.scale(state.textScaleX, state.textScaleY);
+
+                if (state.letterSpacing !== 0) {
+                    let totalWidth = 0;
+                    const charWidths = [];
+                    for (let i = 0; i < state.text.length; i++) {
+                        const w = ctx.measureText(state.text[i]).width;
+                        charWidths.push(w);
+                        totalWidth += w;
+                    }
+                    // effective letter spacing should reflect horizontal stretch and export scale
+                    const effectiveLetter = state.letterSpacing * scale * state.textScaleX;
+                    totalWidth += effectiveLetter * (state.text.length - 1);
+
+                    let x = -totalWidth / 2;
+                    for (let i = 0; i < state.text.length; i++) {
+                        ctx.fillText(state.text[i], x + charWidths[i] / 2, 0);
+                        x += charWidths[i] + effectiveLetter;
+                    }
+                } else {
+                    ctx.fillText(state.text, 0, 0);
+                }
+                
+                ctx.restore();
+                
+                const png = canvas.toDataURL("image/png");
+                const a = document.createElement("a");
+                a.href = png;
+                a.download = "creative-poster.png";
+                a.click();
+                
+                loading.classList.remove('active');
+            } catch (err) {
+                console.error("Failed to export poster", err);
+                alert("导出失败，请重试");
+                loading.classList.remove('active');
+            }
+        }
+
+        function generateTopClipPath(boundaries, scale) {
+            const { topBoundary } = boundaries; // topBoundary length == 1200, values in high-res px (TEXT_RENDER_SCALE)
+            const topClipPath = new Path2D();
+            // move across the top edge
+            topClipPath.moveTo(0, 0);
+            topClipPath.lineTo(1200 * scale, 0);
+
+            // iterate sample columns and map to export canvas coordinates
+            for (let sx = 1199; sx >= 0; sx--) {
+                const hrY = Math.max(0, topBoundary[sx]); // in high-res pixels (0..1600*TEXT_RENDER_SCALE)
+                const mappedY = (hrY / TEXT_RENDER_SCALE) * scale; // map to export canvas units
+                const mappedX = sx * scale;
+                topClipPath.lineTo(mappedX, mappedY);
+            }
+
+            topClipPath.closePath();
+            return topClipPath;
+        }
+        
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+    </script>
+</body>
+</html>
